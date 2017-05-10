@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui-1.8.21.custom.min.js"></script>   
+<script type="text/javascript" src="xml.js"></script>     
+<script type="text/javascript">
+$(function(){
+	
+	
+	if(typeof(xml)==="undefined"){
+		
+	}else{
+	var xmldoc=$.parseXML(xml);
+	xmldoc=xmldoc.documentElement;
+	//console.log(xmldoc.nodeName);
+	/*var a=[];
+	var b=[];
+	var c={};
+	c['1']=1;
+	b=[];
+	b.push
+	a.push(b);
+	b.push(c);
+	c={};
+	//b.push("b");
+	b=[];
+	c['2']=2;
+	a.push(b);
+	b.push(c);
+	c={};
+	b=[];
+	a.push(b);
+	c['3']=3;
+	b.push(c);*/
+	//console.log(a);
+	var canvas=document.getElementById('mycanvas');
+	var context=canvas.getContext('2d');
+	//console.log(xmldoc.firstChild.hasChildNodes());
+	//console.log(xmldoc.getAttribute("style"));
+	//console.log(xmldoc.firstChild.getAttribute("style"));
+	//console.log($(xmldoc).children().eq(0).get(0).style);
+	var bodywidth=document.documentElement.clientWidth;
+	var bodyheight=document.documentElement.clientHeight;
+//	console.log(bodywidth);
+	$(canvas).attr("width",bodywidth);
+	$(canvas).attr("height",bodyheight);
+//	console.log($(canvas).attr("width"));
+	var attrarray=[];
+	var array=[];
+	var attr={};
+	getChildNode(xmldoc,attr,attrarray,array);
+//	console.log(array.length);
+	for(var i=0;i<array.length;i++){
+		for(var j=0;j<array[i].length;j++){
+	//		console.log(array[i][j]['text']);
+		}
+	}
+	var h=0;
+	for(var i=0;i<array.length;i++){
+		var width=0;
+		
+		for(var j=0;j<array[i].length;j++){
+			var font="";
+			if(array[i][j]['fontStyle']!=undefined){
+				font=font+array[i][j]['fontStyle']+" ";
+			}
+			if(array[i][j]['fontWeight']!=undefined){
+				font=font+array[i][j]['fontWeight']+" ";
+			}
+			if(array[i][j]['fontSize']!=undefined){
+				font=font+array[i][j]['fontSize']+" ";
+			}
+			if(array[i][j]['fontFamily']!=undefined){
+				font=font+array[i][j]['fontFamily']+" ";
+			}
+			if(array[i][j]['text']!=""){
+				context.font=font;
+				var metrics=context.measureText(array[i][j]['text']);
+				width=width+metrics.width;
+				array[i][j]['w']=metrics.width;
+			}
+			
+		}
+		var drawwidth=0;
+		if(width<=bodywidth){
+			var fontsize=array[i][0]['fontSize'];
+			fontsize=fontsize.substring(0,fontsize.length-2);
+			var hheight=parseInt(fontsize);
+			var ffweight='normal';
+			var fffamily="Arial";
+			if(array[i][0]['fontWeight']!=undefined){
+				ffweight=array[i][0]['fontWeight'];
+			}
+			if(array[i][0]['fontFamily']!=undefined){
+				fffamily=array[i][0]['fontFamily'];
+			}
+	
+			var sss=MeasureText(array[i][0]['text'],ffweight,fffamily,hheight)
+			var height=sss[1];
+			for(var j=0;j<array[i].length;j++){
+				if(array[i][j]['text']!=""){
+			//	console.log(array[i][j]['text'],array[i][j]['fontSize']);
+					var size=array[i][j]['fontSize'];
+					size=size.substring(0,size.length-2);
+					var fontheight=parseInt(size);	
+					var fffweight='normal';
+					var ffffamily="Arial";
+					if(array[i][j]['fontWeight']!=undefined){
+						fffweight=array[i][j]['fontWeight'];
+					}
+					if(array[i][j]['fontFamily']!=undefined){
+						ffffamily=array[i][j]['fontFamily'];
+					}
+	
+					var ssss=MeasureText(array[i][j]['text'],fffweight,ffffamily,fontheight)
+					var ffontheight=ssss[1];
+					if(height<ffontheight){
+						height=ffontheight;
+						
+					}
+					
+				}
+			}
+			if(i==0){
+				h=h+height;
+			}else{
+				h=h+height+10;
+			}
+			for(var j=0;j<array[i].length;j++){
+				
+				var font="";
+				if(array[i][j]['fontStyle']!=undefined){
+					font=font+array[i][j]['fontStyle']+" ";
+				}
+				if(array[i][j]['fontWeight']!=undefined){
+					font=font+array[i][j]['fontWeight']+" ";
+				}
+				if(array[i][j]['fontSize']!=undefined){
+					font=font+array[i][j]['fontSize']+" ";
+				}
+				if(array[i][j]['fontFamily']!=undefined){
+					font=font+array[i][j]['fontFamily']+" ";
+				}
+				if(array[i][j]['text']!=""){
+					context.font=font;
+					context.fillStyle=array[i][j]['color'];
+					//console.log(array[i][j]['text'],font,"h");
+					context.fillText(array[i][j]['text'],drawwidth,h);
+					drawwidth=array[i][j]['w']+drawwidth;
+				}
+			}
+		}else  if(width>bodywidth){
+			var wordarray=[];
+			wordarray=OneWord(array[i]);
+		//	console.log(wordarray,"wordarray");
+			var linearray=[];
+			var w=0;
+			for(var l=0;l<wordarray.length;l++){
+				var wordwidth=getWordWidth(wordarray[l],context);
+				//console.log(wordwidth,"wordwidth");
+				w=w+wordwidth;
+				if(w>bodywidth){
+					var fontsize=linearray[0][0]['fontSize'];
+					fontsize=fontsize.substring(0,fontsize.length-2);
+					var hheight=parseInt(fontsize);
+					var ffweight='normal';
+					var fffamily="Arial";
+					if(linearray[0][0]['fontWeight']!=undefined){
+					ffweight=linearray[0][0]['fontWeight'];
+					}
+					if(linearray[0][0]['fontFamily']!=undefined){
+						fffamily=linearray[0][0]['fontFamily'];
+					}
+					var divsize=MeasureText(linearray[0][0]['text'],ffweight,fffamily,hheight);
+					var height=divsize[1];
+					for(var n=0;n<linearray.length;n++){
+						for(var o=0;o<linearray[n].length;o++){
+							var size=linearray[n][o]['fontSize'];
+							size=size.substring(0,size.length-2);
+							var fontheight=parseInt(size);
+							var fffweight='normal';
+							var ffffamily="Arial";
+							if(linearray[n][o]['fontWeight']!=undefined){
+								fffweight=linearray[n][o]['fontWeight'];
+							}
+							if(linearray[n][o]['fontFamily']!=undefined){
+								ffffamily=linearray[n][o]['fontFamily'];
+							}
+	
+							var ssss=MeasureText(linearray[n][o]['text'],fffweight,ffffamily,fontheight)
+							var ffontheight=ssss[1];							
+							if(height<fontheight){
+								height=fontheight;
+							}
+						}
+					}
+					if(i==0){
+					h=h+height;
+					}else{
+						h=h+height+10;
+					}
+					var wordx=0;
+					for(var n=0;n<linearray.length;n++){
+						for(var o=0;o<linearray[n].length;o++){
+							var font='';
+							if(linearray[n][o]['fontStyle']!=undefined){
+								font=font+linearray[n][o]['fontStyle']+" ";
+							}
+							if(linearray[n][o]['fontWeight']!=undefined){
+								font=font+linearray[n][o]['fontWeight']+" ";
+							}
+							if(linearray[n][o]['fontSize']!=undefined){
+								font=font+linearray[n][o]['fontSize']+" ";
+							}
+							if(linearray[n][o]['fontFamily']!=undefined){
+								font=font+linearray[n][o]['fontFamily']+" ";
+							}
+							context.font=font;
+						//	console.log(font,"font");
+							context.fillStyle=linearray[n][o]['color'];
+							context.fillText(linearray[n][o]['text'],wordx,h);
+							var metrics=context.measureText(linearray[n][o]['text']);
+							wordx=wordx+metrics.width;
+						}
+					}
+					linearray=[];
+					linearray.push(wordarray[l]);
+					w=0;
+					w=w+wordwidth;
+				}else{
+					linearray.push(wordarray[l]);
+					//for(var m=0;m<wordarray[l].length;m++){
+					//	var font="";
+					//	if(wordarray[l][m]['fontStyle']!=undefined){
+					//		font=font+wordarray[l][m]['fontStyle']+" ";
+					//	}
+					//	if(attr['fontWeight']!=undefined){
+					//		font=font+wordarray[l][m]['fontWeight']+" ";
+					//	}
+					//	if(attr['fontSize']!=undefined){
+					//		font=font+wordarray[l][m]['fontSize']+" ";
+					//	}
+					//	if(attr['fontFamily']!=undefined){
+					//		font=font+wordarray[l][m]['fontFamily']+" ";
+					//	}
+					//	context.font=font;
+					//	context.fillStyle=array[i][j]['color'];
+					//	context.fillText(array[i][j]['text'],drawwidth,h);
+					//	drawwidth=array[i][j]['w']+drawwidth;
+					}
+				}
+				var fontsize=linearray[0][0]['fontSize'];
+					fontsize=fontsize.substring(0,fontsize.length-2);
+					var hheight=parseInt(fontsize);
+					var ffweight='normal';
+					var fffamily="Arial";
+					if(linearray[0][0]['fontWeight']!=undefined){
+					ffweight=linearray[0][0]['fontWeight'];
+					}
+					if(linearray[0][0]['fontFamily']!=undefined){
+						fffamily=linearray[0][0]['fontFamily'];
+					}
+					var divsize=MeasureText(linearray[0][0]['text'],ffweight,fffamily,hheight);
+					var height=divsize[1];
+					for(var n=0;n<linearray.length;n++){
+						for(var o=0;o<linearray[n].length;o++){
+							var size=linearray[n][o]['fontSize'];
+							size=size.substring(0,size.length-2);
+							var fontheight=parseInt(size);
+							var fffweight='normal';
+							var ffffamily="Arial";
+							if(linearray[n][o]['fontWeight']!=undefined){
+								fffweight=linearray[n][o]['fontWeight'];
+							}
+							if(linearray[n][o]['fontFamily']!=undefined){
+								ffffamily=linearray[n][o]['fontFamily'];
+							}
+	
+							var ssss=MeasureText(linearray[n][o]['text'],fffweight,ffffamily,fontheight)
+							var ffontheight=ssss[1];							
+							if(height<fontheight){
+								height=fontheight;
+							}
+						}
+					}
+					/*var fontsize=linearray[0][0]['fontSize'];
+					fontsize=fontsize.substring(0,fontsize.length-2);
+					var height=parseInt(fontsize);
+					for(var n=0;n<linearray.length;n++){
+						for(var o=0;o<linearray[n].length;o++){
+							var size=linearray[n][o]['fontSize'];
+							size=size.substring(0,size.length-2);
+							var fontheight=parseInt(size);	
+						//	console.log(fontheight,size,"fontheight");
+							if(height<fontheight){
+								height=fontheight;
+							}
+						}
+					}*/
+					
+						h=h+height;
+					
+					var wordx=0;
+					for(var n=0;n<linearray.length;n++){
+						for(var o=0;o<linearray[n].length;o++){
+							var font='';
+							if(linearray[n][o]['fontStyle']!=undefined){
+								font=font+linearray[n][o]['fontStyle']+" ";
+							}
+							if(linearray[n][o]['fontWeight']!=undefined){
+								font=font+linearray[n][o]['fontWeight']+" ";
+							}
+							if(linearray[n][o]['fontSize']!=undefined){
+								font=font+linearray[n][o]['fontSize']+" ";
+							}
+							if(linearray[n][o]['fontFamily']!=undefined){
+								font=font+linearray[n][o]['fontFamily']+" ";
+							}
+							context.font=font;
+						//	console.log(font,"font");
+							context.fillStyle=linearray[n][o]['color'];
+							context.fillText(linearray[n][o]['text'],wordx,h);
+							var metrics=context.measureText(linearray[n][o]['text']);
+							wordx=wordx+metrics.width;
+						}
+					}
+	//		var outofwidth=0;
+	//		for (var j=0;j<array[i].length;j++){
+	//			var font="";
+	//			if(attr['fontStyle']!=undefined){
+	//				font=font+array[i][j]['fontStyle']+" ";
+	//			}
+	//			if(attr['fontWeight']!=undefined){
+	//				font=font+array[i][j]['fontWeight']+" ";
+	//			}
+	//			if(attr['fontSize']!=undefined){
+	//				font=font+array[i][j]['fontSize']+" ";
+	//			}
+	//			if(attr['fontFamily']!=undefined){
+	//				font=font+array[i][j]['fontFamily']+" ";
+	//			}
+	//			if(array[i][j]['text']!=''){
+	//				context.font=font;
+	//				var metrics=context.measureText(array[i][j]['text']);
+	//				outofwidth=outofwidth+metrics.width;
+	//				if(outofwidth>376){
+	//					var text=array[i][j]['text'];
+	//					var txt=text.split(' ');
+	//					outofwidth=outofwidth-metrics.width;
+	//					for (var k=0;k<txt.length;k++){
+	//						var metrics1=context.measureText(txt[k]);
+	//						outofwidth=outofwidth+metrics1.width;
+	//						if(outofwidth>376){
+	//							array[i][j]['break']=k;
+	//							break;
+	//						}
+	//					}
+	//				}
+	//			}
+	//		}
+			
+		}else if (width==0){
+			var fontsize=array[i][0]['fontSize'];
+			fontsize=fontsize.substring(0,fontsize.length-2);
+			var hheight=parseInt(fontsize);
+			var ffweight='normal';
+			var fffamily="Arial";
+			if(array[i][0]['fontWeight']!=undefined){
+				ffweight=array[i][0]['fontWeight'];
+			}
+			if(array[i][0]['fontFamily']!=undefined){
+				fffamily=array[i][0]['fontFamily'];
+			}
+	
+			var sss=MeasureText(array[i][0]['text'],ffweight,fffamily,hheight)
+			var height=sss[1];
+		
+			if(i==0){
+						h=h+height;
+					}else{
+						h=h+height+10;
+					}
+		}
+	}
+	}
+});
+function getChildNode(xmldoc,attr,attrarray,array){
+	if(xmldoc.hasChildNodes()){
+	var children=xmldoc.childNodes;
+		for(var i=0;i<children.length;i++){
+			if(children[i].nodeType!=3){
+				var child=children[i];
+				if(child.nodeName.toLowerCase()=="p"){
+					attrarray=[];
+					array.push(attrarray);
+				//console.log(array,array.length,"xixixi");
+				}
+				//console.log(child.getAttribute("style"),child);
+				var style=child.getAttribute("style");
+				var attrtable={};
+				getStyle(attrtable,attr);
+				getFontStyle(style,attr);
+			
+				
+				getChildNode(child,attr,attrarray,array);
+			//	console.log(child.parentNode.getAttribute("style"));
+				//var parentstyle=child.parentNode.getAttribute("style");
+			//	getFontStyle(parentstyle,attrtable);
+				attr={};
+				if(attrtable['fontSize']!=undefined){
+					attr['fontSize']=attrtable['fontSize'];
+				}
+				if(attrtable['fontWeight']!=undefined){
+					attr['fontWeight']=attrtable['fontWeight'];
+				}
+				if(attrtable['fontStyle']!=undefined){
+					attr['fontStyle']=attrtable['fontStyle'];
+				}
+				if(attrtable['color']!=undefined){
+					attr['color']=attrtable['color'];
+				}
+				if(attrtable['fontFamily']!=undefined){
+					attr['fontFamily']=attrtable['fontFamily'];
+				}
+			}else{
+				//var font="";
+				//if(attr['fontStyle']!=undefined){
+				//	font=font+attr['fontStyle']+" ";
+				//}
+				//if(attr['fontWeight']!=undefined){
+				//	font=font+attr['fontWeight']+" ";
+				//}
+				//if(attr['fontSize']!=undefined){
+				//	font=font+attr['fontSize']+" ";
+				//}
+				//if(attr['fontFamily']!=undefined){
+				//	font=font+attr['fontFamily']+" ";
+				//}
+				attr['text']=children[i].nodeValue;
+			//	if(children[i].nodeValue==" text"){
+					//console.log(attr);
+			//	}
+				//console.log(children[i].nodeValue,"nodevalue");
+				attrarray.push(attr);
+			//	console.log(array,array.length,"haha");
+				//console.log(font);
+				//context.fillStyle=attr['color'];
+				//context.font=font;
+				//context.fillText(children[i].nodeValue,100,100);
+				var attrtable=attr;
+				attr={};
+				if(attrtable['fontSize']!=undefined){
+					attr['fontSize']=attrtable['fontSize'];
+				}
+				if(attrtable['fontWeight']!=undefined){
+					attr['fontWeight']=attrtable['fontWeight'];
+				}
+				if(attrtable['fontStyle']!=undefined){
+					attr['fontStyle']=attrtable['fontStyle'];
+				}
+				if(attrtable['color']!=undefined){
+					attr['color']=attrtable['color'];
+				}
+				if(attrtable['fontFamily']!=undefined){
+					attr['fontFamily']=attrtable['fontFamily'];
+				}
+			}
+		}
+	
+	}else{
+		if(xmldoc.nodeName=="P"){
+		attr['text']='';
+			attrarray.push(attr);
+		//	console.log(array,array.length,"haha");
+			//attr['text']=undefined;
+		//	var attrtable=attr;
+				attr={};
+		}
+	}
+	
+}
+function OneWord(array){
+	var wordarray=[];
+	for(var i=0;i<array.length;i++){
+		//console.log(array[i]['text']!='',"text");
+		if(array[i]['text']!=''){
+			var txt=array[i]['text'].split(' ');
+			for(var j=0;j<txt.length-1;j++){
+				var wordstyle=[];
+				if(txt[j]==''){
+					var blankspacestyle={};
+					getStyle(blankspacestyle,array[i]);
+					blankspacestyle['text']=' ';
+					wordstyle.push(blankspacestyle);
+					wordarray.push(wordstyle);
+				}else{
+					for(var k=0;k<txt[j].length;k++){
+						var charstyle={};
+						getStyle(charstyle,array[i]);
+						charstyle['text']=txt[j].substring(k,k+1);
+						wordstyle.push(charstyle);
+					}
+					wordarray.push(wordstyle);
+					wordstyle=[];
+					var blankspacestyle={};
+					getStyle(blankspacestyle,array[i]);
+					blankspacestyle['text']=' ';
+					wordstyle.push(blankspacestyle);
+					wordarray.push(wordstyle);
+				}
+			}
+			
+			var texttext=array[i]['text'];
+			var onewordstyle=[];
+			var endpart=txt[txt.length-1];
+			for(var j=0;j<endpart.length;j++){
+				var charstyle={};
+				getStyle(charstyle,array[i]);
+				charstyle['text']=endpart.substring(j,j+1);
+				onewordstyle.push(charstyle);
+			}
+			var endchar=texttext.substring(texttext.length-1,texttext.length);
+			for(var index=i+1;index<array.length;index++){
+				var nexttext=array[index]['text'];
+				var startchar=nexttext.substring(0,1);
+				if(endchar!=' '&&startchar!=' '){
+					var nexttxt=nexttext.split(' ');
+					if(nexttxt.length==1){
+						for(var j=0;j<nexttext.length;j++){
+							var charstyle={};
+							getStyle(charstyle,array[index]);
+							charstyle['text']=nexttext.substring(j,j+1);
+							onewordstyle.push(charstyle);
+							i=index;
+						}
+					}else{
+						var nextstartpart=nexttxt[0];
+						nexttext=nexttext.substring(nextstartpart.length,nexttext.length);
+						array[index]['text']=nexttext;
+						for(var j=0;j<nextstartpart.length;j++){
+							var charstyle={};
+							getStyle(charstyle,array[index]);
+							charstyle['text']=nextstartpart.substring(j,j+1);
+							onewordstyle.push(charstyle);
+						}
+						//wordarray.push(onewordstyle);
+						i=index-1;
+						break;
+					}
+				}else{
+					//wordarray.push(onewordstyle);
+					i=index-1;
+					break;
+				}
+			}
+			wordarray.push(onewordstyle);
+			/*else{
+				for(var j=0;j<txt.length;j++){
+					var wordstyle=[];
+					if(txt[j]==''){
+						if(j!=txt.length-1){
+							var blankspacestyle={};
+							getStyle(blankspacestyle,array[i]);
+							blankspacestyle['text']=' ';
+							wordstyle.push(blankspacestyle);
+							wordarray.push(wordstyle);
+						}
+					}else{
+						for(var k=0;k<txt[j].length;k++){
+							var charstyle={};
+							getStyle(charstyle,array[i]);
+							charstyle['text']=txt[j].substring(k,k+1);
+							wordstyle.push(charstyle);
+						}
+						wordarray.push(wordstyle);
+						if(j!=txt.length-1){
+							wordstyle=[];
+							var blankspacestyle={};
+							getStyle(blankspacestyle,array[i]);
+							blankspacestyle['text']=' ';
+							wordstyle.push(blankspacestyle);
+							wordarray.push(wordstyle);
+						}
+					}
+						
+				}
+			}*/
+		}
+	}
+	return wordarray;
+}
+function oneChar(){
+	
+}
+function getStyle(style,table){
+	if(table['fontStyle']!=undefined){
+		style['fontStyle']=table['fontStyle'];
+	}
+	if(table['fontWeight']!=undefined){
+		style['fontWeight']=table['fontWeight'];
+	}
+	if(table['fontSize']!=undefined){
+		style['fontSize']=table['fontSize'];
+	}
+	if(table['color']!=undefined){
+		style['color']=table['color'];
+	}
+	if(table['fontFamily']!=undefined){
+		style['fontFamily']=table['fontFamily'];
+	}
+	
+}
+function getFontStyle(style,attr){
+	if(style!=null){
+		var str=style.split(";");
+		for(var i=0;i<str.length;i++){
+			var s=str[i].split(":");
+			if(s[0]=="font-size"){
+				attr['fontSize']=s[1];
+			}else if(s[0]=="color"){
+				attr['color']=s[1];
+			}else if(s[0]=="font-weight"){
+				attr['fontWeight']=s[1];
+			}else if(s[0]=="font-style"){
+				attr['fontStyle']=s[1];
+			}else if(s[0]=="text-decoration"){
+				attr['textDecoration']=s[1];
+			}else if(s[0]=="font-family"){
+				attr['fontFamily']=s[1];
+			}
+		}
+	}
+	
+}
+function MeasureText(text, bold, font, size)
+{
+    // This global variable is used to cache repeated calls with the same arguments
+    var str = text + ':' + bold + ':' + font + ':' + size;
+    if (typeof(__measuretext_cache__) == 'object' && __measuretext_cache__[str]) {
+        return __measuretext_cache__[str];
+    }
+
+    var div = document.createElement('DIV');
+        div.innerHTML = text;
+        div.style.position = 'absolute';
+        div.style.top = '-100px';
+        div.style.left = '-100px';
+        div.style.fontFamily = font;
+        div.style.fontWeight = bold ? 'bold' : 'normal';
+	
+        div.style.fontSize = size + 'px';
+    document.body.appendChild(div);
+    
+    var size = [div.offsetWidth, div.offsetHeight];
+
+    document.body.removeChild(div);
+    
+    // Add the sizes to the cache as adding DOM elements is costly and can cause slow downs
+    if (typeof(__measuretext_cache__) != 'object') {
+        __measuretext_cache__ = [];
+    }
+    __measuretext_cache__[str] = size;
+    
+    return size;
+}
+function getWordWidth(attrarray,context){
+	var width=0;
+	for(var i=0;i<attrarray.length;i++){
+		var font="";
+		if(attrarray[i]['fontStyle']!=undefined){
+			font=font+attrarray[i]['fontStyle']+" ";
+		}
+		if(attrarray[i]['fontWeight']!=undefined){
+			font=font+attrarray[i]['fontWeight']+" ";
+		}
+		if(attrarray[i]['fontSize']!=undefined){
+			font=font+attrarray[i]['fontSize']+" ";
+		}
+		if(attrarray[i]['fontFamily']!=undefined){
+			font=font+attrarray[i]['fontFamily']+" ";
+		}
+		if(attrarray[i]['text']!=''){
+			context.font=font;
+			var metrics=context.measureText(attrarray[i]['text']);
+			width=width+metrics.width;
+		}
+	}
+	return width;
+}
+</script>
+</head>
+<body style="margin:0px;padding:0px;overflow:hidden">
+<canvas id="mycanvas"></canvas>
+</body>
+</html>

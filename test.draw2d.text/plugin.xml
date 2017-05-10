@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         id="application"
+         point="org.eclipse.core.runtime.applications">
+      <application>
+         <run
+               class="test.draw2d.text.Application">
+         </run>
+      </application>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            name="RCP Perspective"
+            class="test.draw2d.text.Perspective"
+            id="test.draw2d.text.perspective">
+      </perspective>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            class="test.draw2d.text.ViewPart1"
+            id="test.draw2d.text.view1"
+            name="ckeditor"
+            restorable="true">
+      </view>
+      <view
+            class="test.draw2d.text.ViewPart2"
+            id="test.draw2d.text.view2"
+            name="name"
+            restorable="true">
+      </view>
+      <view
+            class="test.draw2d.text.ViewPart3"
+            id="test.draw2d.text.view3"
+            name="java draw2d"
+            restorable="true">
+      </view>
+      <view
+            class="test.draw2d.text.ViewPart4"
+            id="test.draw2d.text.view4"
+            name="html canvas"
+            restorable="true">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="test.draw2d.text.perspective">
+         <view
+               id="test.draw2d.text.view1"
+               minimized="false"
+               ratio="0.5f"
+               relationship="top"
+               relative="org.eclipse.ui.editorss">
+         </view>
+         <view
+               id="test.draw2d.text.view3"
+               minimized="false"
+               ratio="0.5f"
+               relationship="bottom"
+               relative="org.eclipse.ui.editorss">
+         </view>
+         <view
+               id="test.draw2d.text.view4"
+               minimized="false"
+               ratio="0.5f"
+               relationship="left"
+               relative="test.draw2d.text.view3">
+         </view>
+      </perspectiveExtension>
+   </extension>
+   <extension
+         id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="test.draw2d.text.application"
+            name="drawText">
+         <property
+               name="appName"
+               value="drawText">
+         </property>
+      </product>
+   </extension>
+
+</plugin>

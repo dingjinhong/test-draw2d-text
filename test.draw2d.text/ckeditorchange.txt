@@ -1,0 +1,28 @@
+1.paste event;
+2.change event;
+3.allowedContent:
+						'p li{text-algin}; ' +
+						'u ul strong em; ' +
+						'span{font-family,font-size,color,background-color}; '+
+						'a[!href];',
+4.toolbar: [
+							[ 'Source', '-', 'Bold', 'Italic', 'Underline', '-', 'BulletedList', '-', 'Link', 'Unlink' ],
+							[ 'JustifyLeft', 'JustifyCenter', 'JustifyRight'],
+							'/',
+							[ 'Font', 'FontSize' ],
+							[ 'TextColor', '-', 'BGColor' ]
+						],
+5.extraPlugins: 'pastefromword',
+6.fontSize_defaultLabel:'13px',
+7.font_defaultLabel:'Arial',
+8.forcePasteAsPlainText :false,
+9.resize_enabled:true,
+10.function gettype(){
+		return CKEDITOR.instances.editor1.mode;
+		}
+11.function getdata(){
+			 return CKEDITOR.instances.editor1.getData();
+		}
+12.contents.css:body margin set 0px;add p{margin-top:0px;margin-bottom:10px;};remove line-height style in .cke_editable;
+13.sample.css:body margin and padding set 0px;remove body "width:960" and "margin:0 auto"; all label line height set 0px;
+14.The css file which is begin with editor in skins/moono ,the cke_chrome class border set 0px;

@@ -1,0 +1,65 @@
+<html>
+<head>
+<script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui-1.8.21.custom.min.js"></script>    
+<script type="text/javascript">
+$(function(){
+	var canvas=document.getElementById('mycanvas');
+	var context=canvas.getContext('2d');
+	context.font='Italic 54pt "Segoe Script"';
+	context.fillText('script',100,100);
+	var metrics=context.measureText('V');
+	context.fillText('V',100,154);
+	context.fillText('A',100+metrics.width,154);
+	metrics=context.measureText('s');
+	context.fillText('s',100,262);
+	context.fillText('c',100+metrics.width,262);
+	var width=100+metrics.width;
+	metrics=context.measureText('c');
+	context.fillText('r',width+metrics.width,262);
+	width=width+metrics.width;
+	metrics=context.measureText('r');
+	context.fillText('i',width+metrics.width,262);
+	width=width+metrics.width;
+	metrics=context.measureText('i');
+	context.fillText('p',width+metrics.width,262);
+	width=width+metrics.width;
+	metrics=context.measureText('p');
+	context.fillText('t',width+metrics.width,262);
+	width=width+metrics.width;
+	metrics=context.measureText('t');
+	context.fillText(' ',width+metrics.width,262);
+	width=width+metrics.width;
+	metrics=context.measureText(' ');
+	context.fillText('s',width+metrics.width,262);
+	width=width+metrics.width;
+	metrics=context.measureText('s');
+	context.fillText(' ',width+metrics.width,262);
+	width=width+metrics.width;
+	metrics=context.measureText(' ');
+	context.fillText('d',width+metrics.width,262);
+	width=width+metrics.width;
+	metrics=context.measureText('d');
+	context.fillText(' ',width+metrics.width,262);
+	width=width+metrics.width;
+	metrics=context.measureText(' ');
+	context.fillText('t',width+metrics.width,262);
+	width=width+metrics.width;
+	
+	context.fillText('pc',100,316);
+	context.font='54pt Arial';
+	metrics=context.measureText('V');
+	context.fillText('V',100,208);
+	context.fillText('A',100+metrics.width,208);
+});
+</script>
+</head>
+<body>
+<div>
+<canvas id="mycanvas" width="800px" height="500px"></canvas>
+</div>
+<div style="font-family:Segoe Script;font-size:54px">
+VA SCRIPT script
+</div>
+</body>
+</html>

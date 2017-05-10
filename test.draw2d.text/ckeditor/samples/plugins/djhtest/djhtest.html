@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<!--
+Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.md or http://ckeditor.com/license
+-->
+<html>
+<head>
+	<title>DjhTest Page Editing &mdash; CKEditor Sample</title>
+	<meta charset="utf-8">
+	<script src="../../../ckeditor.js"></script>
+	<script type="text/javascript" src="js/jquery-1.8.2.min.js"></script>
+	<script type="text/javascript" src="js/jquery-ui-1.9.1.custom.min.js"></script>    
+	<link rel="stylesheet" href="../../../samples/sample.css">
+</head>
+<body>
+	
+		<textarea cols="80" id="editor1" name="editor1" rows="10">
+			&lt;p&gt;This is some &lt;strong&gt;sample text&lt;/strong&gt;. You are using &lt;a href="http://ckeditor.com/"&gt;CKEditor&lt;/a&gt;.&lt;/p&gt;
+		</textarea>
+		<script>
+		
+
+$.fn.extend({
+ toDIYString:function(){
+  $("<div>").appendTo("body").attr("id","DIY_TEMP_DIV").hide().append(this);
+  var str=$("#DIY_TEMP_DIV").html();
+  $("#DIY_TEMP_DIV").remove();
+  return str;
+ }
+});
+
+
+		//console.log("1");
+			CKEDITOR.replace( 'editor1', {
+				on:{
+					paste:function(evt){
+						var editor=evt.editor;
+						try{
+						//console.log(evt.data.dataValue);
+						var html=evt.data.dataValue;
+							var str=html.replace(new RegExp('<br>','g'),"<br/>");
+							//console.log($($.parseXML(str)),"djh");
+							//console.log($.parseXML(str).innerHTML,"ql");
+							var htmldoc=$($.parseXML(str));
+							$('ul',htmldoc).each(function(idx,sub){
+						//	console.log($(sub).text()=="");
+			    				if($(sub).text()==""){
+			    					$(sub).remove();
+			    				}
+							});
+						//	console.log(htmldoc.children().eq(0).html());
+						//	console.log(htmldoc.text());
+						//	console.log(htmldoc.children()[0].tagName);
+							evt.data.dataValue=htmldoc.children().eq(0).toDIYString();
+							//console.log(htmldoc.text(),htmldoc);
+						}catch(e){
+							//console.log(e);
+						}
+						//console.log(editor.getData());
+						editor.setData(editor.getData()+evt.data.dataValue);
+						//editor.setData(editor.getData()+"<p>djh</p>");
+					}
+				},
+				allowedContent:
+						'p li{text-algin}[rtl]; ' +
+						'u ul strong em; ' +
+						'span{font-family,font-size,color,background-color}; '+
+						'a[!href];',
+				
+				toolbar: [
+							[ 'Source', '-', 'Bold', 'Italic', 'Underline', '-', 'BulletedList', '-', 'Link', 'Unlink' ],
+							[ 'JustifyLeft', 'JustifyCenter', 'JustifyRight'],
+							'/',
+							[ 'Font', 'FontSize' ],
+							[ 'TextColor', '-', 'BGColor' ]
+						],
+				extraPlugins: 'pastefromword',
+				fontSize_defaultLabel:'13px',
+				font_defaultLabel:'Arial',
+				forcePasteAsPlainText :false,
+				resize_enabled:true,			
+			});
+			CKEDITOR.instances.editor1.on('change',function(){
+				theJavaFunction(CKEDITOR.instances.editor1.getData());
+			});
+			function getdata(){
+			 return CKEDITOR.instances.editor1.getData();
+		}
+		function gettype(){
+		return CKEDITOR.instances.editor1.mode;
+		}
+			//console.log("2");
+		</script>
+</body>
+</html>

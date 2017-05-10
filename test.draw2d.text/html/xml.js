@@ -1,0 +1,1 @@
+xml='<haha><p style="font-family:Arial;font-size:13px;color:#000000">This is some <span style="font-weight:bold">sample text</span>. You are usindsdsdsdsdsg <a href="http://ckeditor.com/">CKEditor</a>.</p></haha>'
